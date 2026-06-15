@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Malá kavárna se specialty kávou a domácími dezerty. Útulné prostředí.">
+  <meta name="template-id" content="food-cafe">
+  <title>Kavárna Slunečnice — Specialty káva Praha 2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --off-white:  #fafaf8;
+      --warm-white: #f0ede6;
+      --dark:       #1a1a1a;
+      --dark2:      #2d2d2d;
+      --coffee:     #8b6f47;
+      --coffee-lt:  #c4956a;
+      --beige:      #e8ddd0;
+      --text:       #4a4a4a;
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --sans:  'Inter', system-ui, sans-serif;
+    }
+
+    html { overflow-x: hidden; scroll-behavior: auto; }
+
+    body {
+      background: var(--off-white);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 2;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* ── LOADER ───────────────────────────────────────────── */
+    #loader {
+      position: fixed; inset: 0;
+      background: var(--off-white);
+      z-index: 9999;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 1.6rem;
+      transition: opacity .9s ease, visibility .9s ease;
+    }
+    #loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .loader-logo {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      color: var(--dark);
+      letter-spacing: .05em;
+    }
+    .loader-bar-wrap {
+      width: 200px; height: 1px;
+      background: rgba(139,111,71,.15);
+      overflow: hidden;
+    }
+    .loader-bar {
+      height: 100%; width: 0%;
+      background: var(--coffee);
+      transition: width .25s ease;
+    }
+    .loader-label {
+      font-size: .6rem;
+      text-transform: uppercase;
+      letter-spacing: .15em;
+      color: var(--coffee);
+      font-weight: 400;
+    }
+
+    /* ── NAV ──────────────────────────────────────────────── */
+    #nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.8rem 4rem;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background .4s, padding .4s, box-shadow .4s;
+    }
+    #nav.scrolled {
+      background: var(--off-white);
+      box-shadow: 0 1px 0 rgba(139,111,71,.12);
+      padding: 1.1rem 4rem;
+    }
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 1.45rem;
+      font-weight: 400;
+      color: #fff;
+      text-decoration: none;
+      letter-spacing: .06em;
+      transition: color .3s;
+    }
+    #nav.scrolled .nav-logo { color: var(--dark); }
+    .nav-links {
+      display: flex; align-items: center; gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      color: rgba(255,255,255,.75);
+      text-decoration: none;
+      font-size: .68rem;
+      text-transform: uppercase;
+      letter-spacing: .18em;
+      font-weight: 400;
+      transition: color .3s;
+    }
+    #nav.scrolled .nav-links a { color: var(--dark2); }
+    .nav-links a:hover { color: var(--coffee-lt); }
+    #nav.scrolled .nav-links a:hover { color: var(--coffee); }
+    .nav-cta {
+      background: var(--dark) !important;
+      color: #fff !important;
+      padding: .55rem 1.6rem;
+    }
+    #nav.scrolled .nav-cta { background: var(--dark) !important; color: #fff !important; }
+    .nav-cta:hover { background: var(--coffee) !important; }
+
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      cursor: pointer; padding: .4rem; z-index: 101;
+    }
+    .hamburger span {
+      display: block; width: 22px; height: 1px;
+      background: #fff; transition: all .3s;
+    }
+    #nav.scrolled .hamburger span { background: var(--dark); }
+    .hamburger.open span { background: var(--dark) !important; }
+    .hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+    .mob-menu {
+      position: fixed; inset: 0;
+      background: var(--off-white);
+      z-index: 99;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 2.8rem;
+      opacity: 0; visibility: hidden;
+      transition: opacity .4s, visibility .4s;
+    }
+    .mob-menu.open { opacity: 1; visibility: visible; }
+    .mob-menu a {
+      font-family: var(--serif);
+      font-size: 2.8rem;
+      font-weight: 300;
+      color: var(--dark);
+      text-decoration: none;
+      letter-spacing: .04em;
+      transition: color .3s;
+    }
+    .mob-menu a:hover { color: var(--coffee); }
+
+    /* ── HERO ─────────────────────────────────────────────── */
+    #hero {
+      position: relative;
+      height: 100vh; min-height: 600px;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    #hero-video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(250,250,248,.1), rgba(26,26,26,.7));
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      text-align: center;
+      max-width: 860px;
+      padding: 0 2rem;
+    }
+    .hero-tag {
+      display: block;
+      font-size: .64rem;
+      text-transform: uppercase;
+      letter-spacing: .3em;
+      color: var(--coffee-lt);
+      margin-bottom: 1.8rem;
+      font-weight: 400;
+      opacity: 0;
+    }
+    .hero-title {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: clamp(3rem, 7vw, 6rem);
+      font-weight: 400;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 1.8rem;
+      opacity: 0;
+      transform: translateY(36px);
+    }
+    .hero-rule {
+      width: 80px; height: 1px;
+      background: var(--coffee);
+      margin: 0 auto 2rem;
+      opacity: 0;
+      transform: scaleX(0);
+      transform-origin: left center;
+    }
+    .hero-sub {
+      font-size: .68rem;
+      text-transform: uppercase;
+      letter-spacing: .24em;
+      color: rgba(255,255,255,.75);
+      margin-bottom: 3rem;
+      font-weight: 300;
+      opacity: 0;
+    }
+    .hero-btns {
+      display: flex; gap: 1.4rem;
+      justify-content: center; flex-wrap: wrap;
+      opacity: 0; transform: translateY(20px);
+    }
+
+    /* ── BUTTONS ──────────────────────────────────────────── */
+    .btn {
+      display: inline-block;
+      font-family: var(--sans);
+      font-size: .64rem;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: .2em;
+      text-decoration: none;
+      padding: .95rem 2.6rem;
+      transition: all .3s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-dark { background: var(--dark); color: #fff; }
+    .btn-dark:hover { background: var(--coffee); }
+    .btn-ghost { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.45); }
+    .btn-ghost:hover { border-color: var(--coffee-lt); color: var(--coffee-lt); }
+
+    .hero-vert-left {
+      position: absolute;
+      left: 2.5rem; top: 50%;
+      transform: translateY(-50%) rotate(-90deg);
+      font-size: .57rem;
+      text-transform: uppercase;
+      letter-spacing: .4em;
+      color: rgba(255,255,255,.32);
+      white-space: nowrap;
+      z-index: 2;
+      opacity: 0;
+    }
+    .hero-scroll {
+      position: absolute;
+      right: 2.5rem; bottom: 3rem;
+      display: flex; flex-direction: column;
+      align-items: center; gap: .9rem;
+      z-index: 2; opacity: 0;
+    }
+    .hero-scroll-label {
+      font-size: .55rem;
+      text-transform: uppercase;
+      letter-spacing: .3em;
+      color: rgba(255,255,255,.38);
+      writing-mode: vertical-lr;
+      transform: rotate(180deg);
+      font-weight: 300;
+    }
+    .hero-scroll-line {
+      width: 1px; height: 52px;
+      background: linear-gradient(to bottom, rgba(139,111,71,.7), transparent);
+      animation: lineFlow 2.2s ease-in-out infinite;
+    }
+    @keyframes lineFlow {
+      0%   { transform: scaleY(0); transform-origin: top; }
+      49%  { transform: scaleY(1); transform-origin: top; }
+      50%  { transform: scaleY(1); transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+
+    /* ── SHARED SECTION ELEMENTS ──────────────────────────── */
+    .sec-num {
+      position: absolute;
+      top: 2rem; right: 3rem;
+      font-family: var(--serif);
+      font-size: clamp(5rem, 12vw, 10rem);
+      font-weight: 600;
+      color: transparent;
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+    .sec-tag {
+      display: block;
+      font-size: .6rem;
+      text-transform: uppercase;
+      letter-spacing: .32em;
+      color: var(--coffee);
+      margin-bottom: 1rem;
+      font-weight: 400;
+    }
+    .sec-title {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: clamp(2rem, 3.5vw, 3.4rem);
+      line-height: 1.2;
+      margin-bottom: 1.4rem;
+      color: var(--dark);
+    }
+    .coffee-rule {
+      width: 60px; height: 1px;
+      background: var(--coffee);
+      margin-bottom: 2rem;
+    }
+
+    /* ── 01 — O NÁS ───────────────────────────────────────── */
+    #about {
+      position: relative;
+      background: var(--off-white);
+      overflow: hidden;
+    }
+    #about .sec-num { -webkit-text-stroke: 1px rgba(26,26,26,.055); }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 52% 48%;
+      min-height: 640px;
+    }
+    .about-img { overflow: hidden; position: relative; }
+    .about-img img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      transform: scale(1.06);
+    }
+    .about-body { padding: 7rem 5.5rem 5rem 4.5rem; }
+    .about-text {
+      color: var(--text);
+      line-height: 2;
+      margin-bottom: 1.8rem;
+      font-size: .95rem;
+      font-weight: 300;
+    }
+    .about-stats {
+      display: flex;
+      gap: 0;
+      margin: 2.5rem 0;
+      padding-top: 2rem;
+      border-top: 1px solid var(--beige);
+    }
+    .stat { flex: 1; padding-right: 2rem; }
+    .stat + .stat {
+      padding-left: 2rem; padding-right: 2rem;
+      border-left: 1px solid var(--beige);
+    }
+    .stat-n {
+      font-family: var(--serif);
+      font-size: 1.9rem; font-weight: 400;
+      color: var(--coffee);
+      display: block; line-height: 1; margin-bottom: .4rem;
+    }
+    .stat-l {
+      font-size: .57rem;
+      text-transform: uppercase; letter-spacing: .18em;
+      color: rgba(74,74,74,.52); font-weight: 400;
+    }
+
+    /* ── 02 — MENU ────────────────────────────────────────── */
+    #menu {
+      position: relative;
+      background: var(--warm-white);
+      padding: 8rem 4rem;
+      overflow: hidden;
+    }
+    #menu .sec-num { -webkit-text-stroke: 1px rgba(26,26,26,.04); }
+
+    .menu-head { text-align: center; margin-bottom: 3.5rem; }
+    .menu-head .coffee-rule { margin: 0 auto; }
+
+    .menu-tabs {
+      display: flex; justify-content: center; gap: 3.5rem;
+      border-bottom: 1px solid var(--beige);
+      margin-bottom: 3rem;
+    }
+    .m-tab {
+      font-size: .64rem;
+      text-transform: uppercase; letter-spacing: .22em;
+      color: rgba(74,74,74,.4);
+      cursor: pointer;
+      padding-bottom: 1rem; margin-bottom: -1px;
+      border-bottom: 2px solid transparent;
+      transition: color .3s, border-color .3s;
+      font-weight: 400;
+    }
+    .m-tab.active { color: var(--dark); border-bottom-color: var(--coffee); }
+    .m-tab:hover { color: var(--coffee); }
+
+    .m-panel { display: none; max-width: 640px; margin: 0 auto; }
+    .m-panel.active { display: block; }
+    .m-panel-desc {
+      text-align: center;
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 1.05rem;
+      color: rgba(74,74,74,.55);
+      margin-bottom: 2.5rem;
+    }
+    .m-item {
+      display: flex; align-items: flex-start; gap: 1rem;
+      padding: 1.2rem 0;
+      border-bottom: 1px solid rgba(232,221,208,.6);
+      transition: all .3s;
+    }
+    .m-item:hover .m-name { color: var(--coffee); }
+    .m-item-body { flex: 1; }
+    .m-name {
+      font-size: .95rem; color: var(--dark);
+      font-weight: 400; display: block;
+      margin-bottom: .25rem; transition: color .3s;
+    }
+    .m-desc { font-size: .77rem; color: rgba(74,74,74,.52); font-weight: 300; }
+    .m-price {
+      font-family: var(--serif);
+      color: var(--coffee); font-size: 1.05rem;
+      font-weight: 400; white-space: nowrap; padding-top: .1rem;
+    }
+
+    /* ── 03 — GALERIE ─────────────────────────────────────── */
+    #gallery { position: relative; background: #fff; overflow: hidden; }
+    .gallery-inner {
+      display: grid;
+      grid-template-columns: 60% 40%;
+      height: 500px;
+    }
+    .g-main { position: relative; overflow: hidden; }
+    .g-main img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      transition: transform .7s ease;
+    }
+    .g-main:hover img { transform: scale(1.02); }
+    .g-stack { display: flex; flex-direction: column; }
+    .g-sub { flex: 1; position: relative; overflow: hidden; }
+    .g-sub + .g-sub { border-top: 4px solid #fff; }
+    .g-sub img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      transition: transform .7s ease;
+    }
+    .g-sub:hover img { transform: scale(1.02); }
+    .g-overlay {
+      position: absolute; inset: 0;
+      background: rgba(139,111,71,0);
+      display: flex; align-items: center; justify-content: center;
+      transition: background .4s;
+    }
+    .g-main:hover .g-overlay,
+    .g-sub:hover .g-overlay { background: rgba(139,111,71,.35); }
+    .g-label {
+      font-size: .58rem;
+      text-transform: uppercase; letter-spacing: .32em;
+      color: #fff; opacity: 0;
+      transition: opacity .4s; font-weight: 400;
+    }
+    .g-main:hover .g-label,
+    .g-sub:hover .g-label { opacity: 1; }
+
+    /* ── 04 — PROČ MY ─────────────────────────────────────── */
+    #why {
+      position: relative;
+      background: var(--dark);
+      padding: 8rem 4rem 0;
+      overflow: hidden;
+    }
+    #why .sec-num { -webkit-text-stroke: 1px rgba(139,111,71,.09); }
+
+    .why-head { text-align: center; margin-bottom: 5rem; }
+    .why-head .sec-title { color: #fff; }
+    .why-head .coffee-rule { margin: 0 auto; }
+
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3rem;
+      max-width: 1100px;
+      margin: 0 auto 5rem;
+    }
+    .why-card {
+      text-align: center;
+      padding: 3rem 1.5rem 2rem;
+      border-top: 1px solid rgba(139,111,71,.22);
+    }
+    .why-num {
+      font-family: var(--serif);
+      font-size: 4.5rem; font-weight: 400;
+      color: var(--coffee); opacity: .38;
+      line-height: 1; margin-bottom: 1.8rem;
+    }
+    .why-card-title {
+      font-family: var(--serif);
+      font-size: 1.45rem; font-weight: 400;
+      color: #fff; margin-bottom: 1rem;
+    }
+    .why-card-body {
+      font-size: .82rem;
+      color: rgba(255,255,255,.4);
+      line-height: 1.9; font-weight: 300;
+    }
+
+    .marquee-wrap {
+      overflow: hidden;
+      border-top: 1px solid rgba(139,111,71,.15);
+      padding: 1.6rem 0;
+    }
+    .marquee-track {
+      display: flex; white-space: nowrap;
+      will-change: transform;
+    }
+    .marquee-item {
+      font-size: .58rem;
+      text-transform: uppercase; letter-spacing: .38em;
+      color: rgba(196,149,106,.38);
+      padding-right: 3rem; flex-shrink: 0; font-weight: 400;
+    }
+
+    /* ── 05 — REFERENCE ───────────────────────────────────── */
+    #testimonials {
+      position: relative;
+      background: var(--warm-white);
+      padding: 8rem 4rem;
+      overflow: hidden;
+    }
+    #testimonials .sec-num { -webkit-text-stroke: 1px rgba(26,26,26,.045); }
+
+    .testi-head { text-align: center; margin-bottom: 4.5rem; }
+    .testi-head .coffee-rule { margin: 0 auto; }
+
+    .testi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.5rem;
+      max-width: 1180px; margin: 0 auto;
+    }
+    .testi-card {
+      background: var(--off-white);
+      padding: 3.5rem 2.8rem 2.8rem;
+      position: relative;
+      box-shadow: 0 4px 28px rgba(139,111,71,.06);
+    }
+    .testi-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 1px; background: var(--beige);
+      transition: background .4s;
+    }
+    .testi-card:hover::before { background: var(--coffee); }
+    .quote-glyph {
+      display: block;
+      font-family: var(--serif);
+      font-size: 5.5rem; color: var(--coffee);
+      line-height: .35; margin-bottom: 2rem; opacity: .28;
+    }
+    .testi-text {
+      color: var(--text); line-height: 1.95;
+      font-size: .92rem; margin-bottom: 2.2rem; font-weight: 300;
+    }
+    .testi-author {
+      font-size: .6rem;
+      text-transform: uppercase; letter-spacing: .22em;
+      color: var(--dark); font-weight: 400;
+    }
+    .testi-stars { color: var(--coffee); font-size: .78rem; letter-spacing: .1em; margin-top: .5rem; }
+
+    /* ── 06 — OTEVÍRACÍ DOBY ──────────────────────────────── */
+    #hours { display: grid; grid-template-columns: 1fr 1fr; min-height: 520px; }
+    .hours-left { background: var(--dark); padding: 6rem 5rem; position: relative; }
+    .hours-left .sec-title { color: #fff; }
+    .hours-table { margin-top: 2rem; }
+    .h-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.1rem 0;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .h-day {
+      font-size: .61rem;
+      text-transform: uppercase; letter-spacing: .15em;
+      color: rgba(255,255,255,.38); font-weight: 300;
+    }
+    .h-time {
+      font-family: var(--serif);
+      color: var(--coffee-lt); font-size: 1rem; font-weight: 400;
+    }
+    .h-note {
+      margin-top: 1.8rem; font-size: .6rem;
+      color: rgba(255,255,255,.2); letter-spacing: .08em; font-weight: 300;
+    }
+    .hours-right { position: relative; overflow: hidden; }
+    .hours-right img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .hours-right-overlay {
+      position: absolute; inset: 0;
+      background: rgba(26,26,26,.62);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 1.8rem; text-align: center; padding: 3rem;
+    }
+    .hours-cta-title {
+      font-family: var(--serif);
+      font-size: clamp(1.5rem, 3vw, 2.4rem);
+      font-weight: 400; color: #fff; line-height: 1.3;
+    }
+    .hours-cta-sub {
+      font-size: .67rem; color: rgba(255,255,255,.48);
+      letter-spacing: .16em; font-weight: 300; text-transform: uppercase;
+    }
+
+    /* ── 07 — KONTAKT ─────────────────────────────────────── */
+    #contact {
+      position: relative;
+      background: #fff;
+      padding: 8rem 0;
+      overflow: hidden;
+    }
+    #contact .sec-num { -webkit-text-stroke: 1px rgba(26,26,26,.045); }
+
+    .contact-inner {
+      display: grid; grid-template-columns: 1fr 1.4fr;
+      gap: 6rem; max-width: 1200px;
+      margin: 0 auto; padding: 0 4rem;
+    }
+    .contact-info { padding-top: 2rem; }
+    .c-item { display: flex; gap: 1.4rem; align-items: flex-start; margin-bottom: 2.2rem; }
+    .c-dot {
+      width: 6px; height: 6px;
+      border: 1px solid var(--coffee); border-radius: 50%;
+      margin-top: .65rem; flex-shrink: 0;
+    }
+    .c-label {
+      font-size: .54rem;
+      text-transform: uppercase; letter-spacing: .2em;
+      color: rgba(74,74,74,.42); display: block;
+      margin-bottom: .3rem; font-weight: 400;
+    }
+    .c-value {
+      font-size: .93rem; color: var(--dark);
+      text-decoration: none; transition: color .3s; font-weight: 300;
+    }
+    .c-value:hover { color: var(--coffee); }
+
+    .form-wrap { position: relative; }
+    .form-heading {
+      display: block; font-size: .58rem;
+      text-transform: uppercase; letter-spacing: .32em;
+      color: var(--coffee); margin-bottom: 2.2rem; font-weight: 400;
+    }
+    .contact-form {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1.6rem 2.5rem;
+    }
+    .fg { position: relative; }
+    .fg.full { grid-column: 1 / -1; }
+    .fg label {
+      font-size: .54rem;
+      text-transform: uppercase; letter-spacing: .16em;
+      color: rgba(74,74,74,.42); display: block;
+      margin-bottom: .7rem; font-weight: 400;
+    }
+    .fg input, .fg select, .fg textarea {
+      width: 100%; background: transparent;
+      border: none; border-bottom: 1px solid var(--beige);
+      color: var(--dark); font-size: .9rem;
+      font-family: var(--sans); font-weight: 300;
+      padding: .5rem 0; outline: none;
+      transition: border-color .3s;
+    }
+    .fg input:focus, .fg select:focus, .fg textarea:focus { border-bottom-color: var(--coffee); }
+    .fg textarea { resize: none; height: 82px; }
+    .fg select { appearance: none; cursor: pointer; }
+    .fg select option { background: #fff; color: var(--dark); }
+    .fg input::placeholder, .fg textarea::placeholder { color: rgba(74,74,74,.28); }
+    .form-submit { grid-column: 1 / -1; margin-top: 1rem; }
+
+    /* ── FOOTER ───────────────────────────────────────────── */
+    footer {
+      background: var(--dark);
+      border-top: 1px solid rgba(139,111,71,.12);
+      padding: 2.8rem 4rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .foot-logo {
+      font-family: var(--serif); font-size: 1.3rem;
+      font-weight: 400; color: #fff; letter-spacing: .05em;
+    }
+    .foot-copy { font-size: .6rem; color: rgba(255,255,255,.24); letter-spacing: .08em; font-weight: 300; }
+    .foot-links { display: flex; gap: 2rem; }
+    .foot-links a {
+      font-size: .58rem; text-transform: uppercase; letter-spacing: .15em;
+      color: rgba(255,255,255,.24); text-decoration: none;
+      font-weight: 300; transition: color .3s;
+    }
+    .foot-links a:hover { color: var(--coffee-lt); }
+
+    /* ── RESPONSIVE ───────────────────────────────────────── */
+    @media (max-width: 1100px) {
+      .testi-grid { grid-template-columns: 1fr 1fr; }
+      .testi-grid .testi-card:last-child { grid-column: 1 / -1; max-width: 500px; margin: 0 auto; width: 100%; }
+    }
+    @media (max-width: 960px) {
+      #nav { padding: 1.4rem 2rem; }
+      #nav.scrolled { padding: 1rem 2rem; }
+      .about-grid { grid-template-columns: 1fr; }
+      .about-img { height: 420px; }
+      .about-body { padding: 3.5rem 2.5rem; }
+      .gallery-inner { grid-template-columns: 1fr; height: auto; }
+      .g-main { height: 400px; }
+      .g-stack { flex-direction: row; }
+      .g-sub { height: 250px; }
+      .g-sub + .g-sub { border-top: none; border-left: 4px solid #fff; }
+      .why-grid { grid-template-columns: 1fr 1fr; }
+      #hours { grid-template-columns: 1fr; }
+      .hours-right { height: 420px; }
+      .contact-inner { grid-template-columns: 1fr; gap: 3rem; }
+    }
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .hero-vert-left { display: none; }
+      .why-grid { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; }
+      .testi-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
+      .testi-grid .testi-card:last-child { grid-column: auto; max-width: none; }
+      #menu { padding: 6rem 1.5rem; }
+      #testimonials { padding: 6rem 1.5rem; }
+      #why { padding: 6rem 1.5rem 0; }
+      #contact { padding: 5rem 0; }
+      .contact-inner { padding: 0 1.5rem; gap: 2.5rem; }
+      .contact-form { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 1.4rem; text-align: center; }
+      .foot-links { flex-wrap: wrap; justify-content: center; }
+      .sec-num { right: 1rem; font-size: 5rem; }
+      .hours-left { padding: 4rem 2rem; }
+    }
+    @media (max-width: 480px) {
+      .about-stats { flex-direction: column; gap: 1.5rem; }
+      .stat + .stat { border-left: none; padding-left: 0; border-top: 1px solid var(--beige); padding-top: 1.5rem; }
+      .menu-tabs { gap: 1.8rem; }
+      .gallery-inner { grid-template-columns: 1fr; height: auto; }
+      .g-stack { flex-direction: column; }
+      .g-sub { height: 240px; }
+      .g-sub + .g-sub { border-left: none; border-top: 4px solid #fff; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ LOADER ════════════════════════════════════════════ -->
+<div id="loader">
+  <div class="loader-logo">Kavárna Slunečnice</div>
+  <div class="loader-bar-wrap">
+    <div class="loader-bar" id="loaderBar"></div>
+  </div>
+  <div class="loader-label">Připravujeme váš návrh webu</div>
+</div>
+
+<!-- ══ NAVIGATION ════════════════════════════════════════ -->
+<nav id="nav">
+  <a href="#" class="nav-logo">Kavárna Slunečnice</a>
+  <ul class="nav-links">
+    <li><a href="#about">O nás</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#gallery">Galerie</a></li>
+    <li><a href="#contact">Kontakt</a></li>
+    <li><a href="#contact" class="nav-cta">Rezervovat</a></li>
+  </ul>
+  <div class="hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<div class="mob-menu" id="mobMenu">
+  <a href="#about"   class="mob-link">O nás</a>
+  <a href="#menu"    class="mob-link">Menu</a>
+  <a href="#gallery" class="mob-link">Galerie</a>
+  <a href="#contact" class="mob-link">Kontakt</a>
+  <a href="#contact" class="mob-link" style="color:var(--coffee)">Rezervovat</a>
+</div>
+
+<!-- ══ HERO ══════════════════════════════════════════════ -->
+<section id="hero">
+  <video id="hero-video" muted playsinline preload="auto">
+    <source src="https://raw.githubusercontent.com/rafaelbsqwer/webhunter-assets/main/food-cafe/video.mp4" type="video/mp4">
+  </video>
+  <div class="hero-overlay"></div>
+  <span class="hero-vert-left">SPECIALTY COFFEE</span>
+
+  <div class="hero-content">
+    <span class="hero-tag">— Specialty Coffee &amp; Café —</span>
+    <h1 class="hero-title">Kde každý den začíná skvělou kávou</h1>
+    <div class="hero-rule"></div>
+    <p class="hero-sub">Specialty káva a domácí dezerty na Mánesově ulici</p>
+    <div class="hero-btns">
+      <a href="#contact" class="btn btn-dark">Zastavte se</a>
+      <a href="#menu" class="btn btn-ghost">Prohlédnout menu</a>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <span class="hero-scroll-label">Scroll</span>
+    <div class="hero-scroll-line"></div>
+  </div>
+</section>
+
+<!-- ══ 01 — O NÁS ════════════════════════════════════════ -->
+<section id="about">
+  <span class="sec-num">01</span>
+  <div class="about-grid">
+    <div class="about-img">
+      <img src="https://raw.githubusercontent.com/rafaelbsqwer/webhunter-assets/main/food-cafe/foto1.jpeg"
+           alt="Kavárna Kavárna Slunečnice">
+    </div>
+    <div class="about-body">
+      <span class="sec-tag">— Náš příběh —</span>
+      <h2 class="sec-title">O kavárně<br>Kavárna Slunečnice</h2>
+      <div class="coffee-rule"></div>
+      <p class="about-text">Kavárna Slunečnice je malá rodinná kavárna specializující se na specialty kávu. Pražíme vlastní směsi a pečeme dezerty každý den čerstvě.</p>
+      <div class="about-stats">
+        <div class="stat">
+          <span class="stat-n">5+</span>
+          <span class="stat-l">let tradice</span>
+        </div>
+        <div class="stat">
+          <span class="stat-n">12</span>
+          <span class="stat-l">druhů kávy</span>
+        </div>
+        <div class="stat">
+          <span class="stat-n">100%</span>
+          <span class="stat-l">single origin</span>
+        </div>
+      </div>
+      <a href="#contact" class="btn btn-dark">Navštívit nás</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 02 — MENU ══════════════════════════════════════════ -->
+<section id="menu">
+  <span class="sec-num">02</span>
+  <div class="menu-head">
+    <span class="sec-tag">— Naše nabídka —</span>
+    <h2 class="sec-title">Naše nabídka</h2>
+    <div class="coffee-rule"></div>
+  </div>
+
+  <div class="menu-tabs">
+    <div class="m-tab active" data-tab="0">Specialty káva</div>
+    <div class="m-tab"        data-tab="1">Domácí pečivo</div>
+    <div class="m-tab"        data-tab="2">Snídaně a brunch</div>
+  </div>
+
+  <div class="m-panel active" id="mp0">
+    <p class="m-panel-desc">Espresso, flat white a pour over ze single origin zrn.</p>
+    <div class="m-item">
+      <div class="m-item-body">
+        <span class="m-name">Espresso</span>
+        <span class="m-desc">Single origin, tmavě pražená</span>
+      </div>
+      <span class="m-price">55 Kč</span>
+    </div>
+    <div class="m-item">
+      <div class="m-item-body">
+        <span class="m-name">Flat White</span>
+        <span class="m-desc">Double ristretto, mikropěna</span>
+      </div>
+      <span class="m-price">85 Kč</span>
+    </div>
+    <div class="m-item">
+      <div class="m-item-body">
+        <span class="m-name">Pour Over</span>
+        <span class="m-desc">Ruční příprava, Hario V60</span>
+      </div>
+      <span class="m-price">95 Kč</span>
+    </div>
+    <div class="m-item">
+      <div class="m-item-body">
+        <span class="m-name">Cold Brew</span>
+        <span class="m-desc">20 hodin louhování, podáváno na ledu</span>
+      </div>
+      <span class="m-price">105 Kč</span>
+    </div>
+    <div class="m-item">
+      <div class="m-item-body">
+        <span class="m-name">Batch Brew</span>
+        <span class="m-desc">Filtrovaná káva dne</span>
+      </div>
+      <span class="m-price">75 Kč</span>
+    </div>
+  </div>
+
+  <div class="m-panel" id="mp1">
+    <p class="m-panel-desc">Čerstvé croissanty a cheesecake každý den.</p>
+    <div class="m-item">
+      <div class="m-item-body">
+        <span class="m-name">Avocado Toast</span>
+        <span class="m-desc">Žitný chléb, avokádo, vejce, mikrogreeny</span>
+      </div>
+      <span class="m-price">195 Kč</span>
+    </div>
+    <div class="m-item">
+      <div class="m-item-body">
+        <span class="m-name">Granola Bowl</span>
+        <span class="m-desc">Domácí granola, sezonní ovoce, kokosový jogurt</span>
+      </div>
+      <span class="m-price">165 Kč</span>
+    </div>
+    <div class="m-item">
+      <div class="m-item-body">
+        <span class="m-name">Shakshuka</span>
+        <span class="m-desc">Vejce v rajčatové omáčce, feta, pita chléb</span>
+      </div>
+      <span class="m-price">185 Kč</span>
+    </div>
+    <div class="m-item">
+      <div class="m-item-body">
+        <span class="m-name">Croissant &amp; Jam</span>
+        <span class="m-desc">Čerstvé máslo, domácí džem, med</span>
+      </div>
+      <span class="m-price">95 Kč</span>
+    </div>
+  </div>
+
+  <div class="m-panel" id="mp2">
+    <p class="m-panel-desc">Avocado toast a smoothie pro dobrý start dne.</p>
+    <div class="m-item">
+      <div class="m-item-body">
+        <span class="m-name">Cheesecake</span>
+        <span class="m-desc">Newyorský styl, sezónní ovoce</span>
+      </div>
+      <span class="m-price">125 Kč</span>
+    </div>
+    <div class="m-item">
+      <div class="m-item-body">
+        <span class="m-name">Brownies</span>
+        <span class="m-desc">Tmavá čokoláda, vlašské ořechy</span>
+      </div>
+      <span class="m-price">85 Kč</span>
+    </div>
+    <div class="m-item">
+      <div class="m-item-body">
+        <span class="m-name">Cinnamon Roll</span>
+        <span class="m-desc">Skandinávský styl, kardamom, glazura</span>
+      </div>
+      <span class="m-price">95 Kč</span>
+    </div>
+    <div class="m-item">
+      <div class="m-item-body">
+        <span class="m-name">Tiramisu</span>
+        <span class="m-desc">Espresso, mascarpone, kakao</span>
+      </div>
+      <span class="m-price">115 Kč</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 03 — GALERIE ═══════════════════════════════════════ -->
+<section id="gallery">
+  <div class="gallery-inner">
+    <div class="g-main">
+      <img src="https://raw.githubusercontent.com/rafaelbsqwer/webhunter-assets/main/food-cafe/foto1.jpeg"
+           alt="Interiér kavárny">
+      <div class="g-overlay"><span class="g-label">Interiér</span></div>
+    </div>
+    <div class="g-stack">
+      <div class="g-sub">
+        <img src="https://raw.githubusercontent.com/rafaelbsqwer/webhunter-assets/main/food-cafe/foto2.jpeg"
+             alt="Specialty káva">
+        <div class="g-overlay"><span class="g-label">Káva</span></div>
+      </div>
+      <div class="g-sub">
+        <img src="https://raw.githubusercontent.com/rafaelbsqwer/webhunter-assets/main/food-cafe/foto3.jpeg"
+             alt="Atmosféra">
+        <div class="g-overlay"><span class="g-label">Atmosféra</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 04 — PROČ MY ══════════════════════════════════════ -->
+<section id="why">
+  <span class="sec-num">04</span>
+  <div class="why-head">
+    <span class="sec-tag">— Naše hodnoty —</span>
+    <h2 class="sec-title">Proč si vybrat<br>právě nás</h2>
+    <div class="coffee-rule"></div>
+  </div>
+
+  <div class="why-grid">
+    <div class="why-card">
+      <div class="why-num">01</div>
+      <h3 class="why-card-title">Vlastní pražírna</h3>
+      <p class="why-card-body">Pečlivě vybrané single origin kávy od nejlepších světových pěstitelů, přivážené přímo k vám.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-num">02</div>
+      <h3 class="why-card-title">Domácí dezerty</h3>
+      <p class="why-card-body">Čerstvě pražená káva, připravovaná s péčí a přesností skandinávského baristického přístupu.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-num">03</div>
+      <h3 class="why-card-title">Útulné prostředí</h3>
+      <p class="why-card-body">Každý šálek je jedinečný — přizpůsobíme se vašim preferencím a doporučíme tu správnou kávu.</p>
+    </div>
+  </div>
+
+  <div class="marquee-wrap">
+    <div class="marquee-track" id="marqueeTrack">
+      <span class="marquee-item">SPECIALTY COFFEE · SINGLE ORIGIN · FRESH ROASTED · HAND CRAFTED · NORDIC STYLE · </span>
+      <span class="marquee-item">SPECIALTY COFFEE · SINGLE ORIGIN · FRESH ROASTED · HAND CRAFTED · NORDIC STYLE · </span>
+      <span class="marquee-item">SPECIALTY COFFEE · SINGLE ORIGIN · FRESH ROASTED · HAND CRAFTED · NORDIC STYLE · </span>
+      <span class="marquee-item">SPECIALTY COFFEE · SINGLE ORIGIN · FRESH ROASTED · HAND CRAFTED · NORDIC STYLE · </span>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 05 — REFERENCE ═════════════════════════════════════ -->
+<section id="testimonials">
+  <span class="sec-num">05</span>
+  <div class="testi-head">
+    <span class="sec-tag">— Co říkají hosté —</span>
+    <h2 class="sec-title">Reference<br>našich hostů</h2>
+    <div class="coffee-rule"></div>
+  </div>
+
+  <div class="testi-grid">
+    <div class="testi-card">
+      <span class="quote-glyph">"</span>
+      <p class="testi-text">Nejlepší káva v okolí a dezerty jsou božské.</p>
+      <div class="testi-author">— Lucie M., Praha 2</div>
+      <div class="testi-stars">★★★★★</div>
+    </div>
+    <div class="testi-card">
+      <span class="quote-glyph">"</span>
+      <p class="testi-text">Útulná atmosféra a příjemná obsluha.</p>
+      <div class="testi-author">— Tomáš K., Praha 1</div>
+      <div class="testi-stars">★★★★★</div>
+    </div>
+    <div class="testi-card">
+      <span class="quote-glyph">"</span>
+      <p class="testi-text">Nejlepší specialty coffee v Praze. Baristi vědí přesně, co dělají, a vždy poradí s výběrem. Vzdušný interiér a perfektní atmosféra.</p>
+      <div class="testi-author">Lukáš &amp; Tereza Krejčí</div>
+      <div class="testi-stars">★★★★★</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 06 — OTEVÍRACÍ DOBY ════════════════════════════════ -->
+<section id="hours">
+  <div class="hours-left">
+    <span class="sec-tag">— Kdy nás navštívit —</span>
+    <h2 class="sec-title">Otevírací doby</h2>
+    <div class="coffee-rule"></div>
+    <div class="hours-table">
+      <div class="h-row">
+        <span class="h-day">Pondělí – Pátek</span>
+        <span class="h-time">07:30 – 18:00</span>
+      </div>
+      <div class="h-row">
+        <span class="h-day">Sobota</span>
+        <span class="h-time">08:00 – 17:00</span>
+      </div>
+      <div class="h-row">
+        <span class="h-day">Neděle</span>
+        <span class="h-time">09:00 – 15:00</span>
+      </div>
+    </div>
+    <p class="h-note">* Poslední objednávka 15 min. před zavírací dobou</p>
+  </div>
+  <div class="hours-right">
+    <img src="https://raw.githubusercontent.com/rafaelbsqwer/webhunter-assets/main/food-cafe/foto2.jpeg"
+         alt="Kavárna Kavárna Slunečnice">
+    <div class="hours-right-overlay">
+      <div class="coffee-rule" style="margin:0 auto"></div>
+      <h3 class="hours-cta-title">Přijďte na skvělou<br>šálku kávy</h3>
+      <p class="hours-cta-sub">Těšíme se na vaši návštěvu</p>
+      <a href="#contact" class="btn btn-dark">Rezervovat místo</a>
+      <div class="coffee-rule" style="margin:0 auto"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 07 — KONTAKT ═══════════════════════════════════════ -->
+<section id="contact">
+  <span class="sec-num">07</span>
+  <div class="contact-inner">
+    <div class="contact-info">
+      <span class="sec-tag">— Najdete nás —</span>
+      <h2 class="sec-title">Kontakt<br>&amp; Rezervace</h2>
+      <div class="coffee-rule"></div>
+
+      <div class="c-item">
+        <div class="c-dot"></div>
+        <div>
+          <span class="c-label">Adresa</span>
+          <span class="c-value"></span>
+        </div>
+      </div>
+      <div class="c-item">
+        <div class="c-dot"></div>
+        <div>
+          <span class="c-label">Telefon</span>
+          <a href="tel:+420777111003" class="c-value">+420777111003</a>
+        </div>
+      </div>
+      <div class="c-item">
+        <div class="c-dot"></div>
+        <div>
+          <span class="c-label">Email</span>
+          <a href="mailto:weboviny@email.cz" class="c-value">weboviny@email.cz</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-wrap">
+      <span class="form-heading">Rezervace &amp; Dotazy</span>
+      <form class="contact-form" id="contactForm" novalidate>
+        <div class="fg">
+          <label>Jméno a příjmení</label>
+          <input type="text" placeholder="Jan Novák" required>
+        </div>
+        <div class="fg">
+          <label>Email</label>
+          <input type="email" placeholder="vas@email.cz" required>
+        </div>
+        <div class="fg">
+          <label>Telefon</label>
+          <input type="tel" placeholder="+420 xxx xxx xxx">
+        </div>
+        <div class="fg">
+          <label>Datum návštěvy</label>
+          <input type="date" required>
+        </div>
+        <div class="fg full">
+          <label>Počet osob</label>
+          <select>
+            <option value="">— Vyberte počet hostů —</option>
+            <option>1 osoba</option>
+            <option>2 osoby</option>
+            <option>3 osoby</option>
+            <option>4 osoby</option>
+            <option>5 osob</option>
+            <option>6 a více osob</option>
+          </select>
+        </div>
+        <div class="fg full">
+          <label>Poznámka</label>
+          <textarea placeholder="Speciální přání, alergie, příležitost…"></textarea>
+        </div>
+        <div class="form-submit">
+          <button type="submit" class="btn btn-dark" id="formBtn">Odeslat zprávu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ════════════════════════════════════════════ -->
+<footer>
+  <span class="foot-logo">Kavárna Slunečnice</span>
+  <span class="foot-copy">© 2024 Kavárna Slunečnice. Všechna práva vyhrazena.</span>
+  <div class="foot-links">
+    <a href="#">Ochrana soukromí</a>
+    <a href="#">Podmínky užití</a>
+  </div>
+</footer>
+
+<!-- ══ SCRIPTS ════════════════════════════════════════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+<script>
+(function () {
+  'use strict';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* ── LOADER ──────────────────────────────────────────────── */
+  var loader     = document.getElementById('loader');
+  var loaderBar  = document.getElementById('loaderBar');
+  var video      = document.getElementById('hero-video');
+  var loaderDone = false;
+
+  var pct = 0;
+  var tick = setInterval(function () {
+    pct += Math.random() * 14 + 4;
+    if (pct >= 82) { clearInterval(tick); pct = 82; }
+    loaderBar.style.width = pct + '%';
+  }, 220);
+
+  function hideLoader() {
+    if (loaderDone) return;
+    loaderDone = true;
+    clearInterval(tick);
+    loaderBar.style.transition = 'width .4s ease';
+    loaderBar.style.width = '100%';
+    setTimeout(function () {
+      loader.classList.add('hidden');
+      runHeroEntrance();
+    }, 500);
+  }
+
+  video.addEventListener('canplaythrough', hideLoader);
+  video.addEventListener('loadeddata',     hideLoader);
+  setTimeout(hideLoader, 4000);
+
+  /* ── LENIS SMOOTH SCROLL ─────────────────────────────────── */
+  var lenis = new Lenis({
+    duration: 1.3,
+    easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+    orientation: 'vertical',
+    smoothWheel: true,
+  });
+
+  gsap.ticker.add(function (time) { lenis.raf(time * 1000); });
+  gsap.ticker.lagSmoothing(0);
+  lenis.on('scroll', ScrollTrigger.update);
+
+  /* ── NAV SCROLL STATE ────────────────────────────────────── */
+  var nav = document.getElementById('nav');
+  lenis.on('scroll', function (e) {
+    nav.classList.toggle('scrolled', e.scroll > 80);
+  });
+
+  /* ── HAMBURGER ───────────────────────────────────────────── */
+  var hamburger = document.getElementById('hamburger');
+  var mobMenu   = document.getElementById('mobMenu');
+
+  hamburger.addEventListener('click', function () {
+    var open = hamburger.classList.toggle('open');
+    mobMenu.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+
+  document.querySelectorAll('.mob-link').forEach(function (a) {
+    a.addEventListener('click', function () {
+      hamburger.classList.remove('open');
+      mobMenu.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+
+  /* ── SMOOTH ANCHOR SCROLL ────────────────────────────────── */
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var id = a.getAttribute('href');
+      if (id === '#') return;
+      var target = document.querySelector(id);
+      if (!target) return;
+      e.preventDefault();
+      lenis.scrollTo(target, { offset: -80, duration: 1.6 });
+    });
+  });
+
+  /* ── SCROLL-DRIVEN VIDEO ─────────────────────────────────── */
+  var isMobile = window.innerWidth < 768;
+
+  if (isMobile) {
+    video.loop = true;
+  } else {
+    video.loop = false;
+    video.pause();
+    video.currentTime = 0;
+
+    var heroEl = document.getElementById('hero');
+    lenis.on('scroll', function (e) {
+      if (video.readyState < 2 || !video.duration) return;
+      var p = Math.min(Math.max(e.scroll / heroEl.offsetHeight, 0), 1);
+      video.currentTime = p * video.duration * 0.82;
+    });
+  }
+
+  /* ── HERO ENTRANCE ───────────────────────────────────────── */
+  function runHeroEntrance() {
+    if (isMobile) { video.play().catch(function () {}); }
+
+    gsap.set('.hero-title, .hero-btns', { y: 36 });
+    gsap.set('.hero-scroll',            { y: 20 });
+
+    var tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    tl
+      .to('.hero-tag',       { opacity: 1,              duration: .8  }, .2 )
+      .to('.hero-title',     { opacity: 1, y: 0,        duration: 1.1 }, .4 )
+      .to('.hero-rule',      { opacity: 1, scaleX: 1,   duration: .9,
+                               transformOrigin: 'left center'         }, .65)
+      .to('.hero-sub',       { opacity: 1,              duration: .8  }, .82)
+      .to('.hero-btns',      { opacity: 1, y: 0,        duration: .8  }, .96)
+      .to('.hero-vert-left', { opacity: 1,              duration: 1.1 }, .5 )
+      .to('.hero-scroll',    { opacity: 1, y: 0,        duration: .8  }, 1.2);
+
+    initScrollAnimations();
+    initMarquee();
+  }
+
+  /* ── SCROLL ANIMATIONS ───────────────────────────────────── */
+  function st(el, from, to) {
+    gsap.fromTo(el, from, Object.assign({ ease: 'power3.out' }, to, {
+      scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
+    }));
+  }
+
+  function initScrollAnimations() {
+
+    /* section numbers slide from right */
+    gsap.utils.toArray('.sec-num').forEach(function (el) {
+      gsap.fromTo(el,
+        { opacity: 0, x: 60 },
+        { opacity: 1, x: 0, duration: 1.3, ease: 'power3.out',
+          scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' } }
+      );
+    });
+
+    /* sec-tags */
+    gsap.utils.toArray('.sec-tag').forEach(function (el) {
+      if (el.closest('#hero')) return;
+      gsap.fromTo(el,
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: .7, ease: 'power2.out',
+          scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' } }
+      );
+    });
+
+    /* coffee rules — scaleX left→right */
+    gsap.utils.toArray('.coffee-rule').forEach(function (el) {
+      if (el.closest('#hero')) return;
+      gsap.fromTo(el,
+        { scaleX: 0, transformOrigin: 'left center' },
+        { scaleX: 1, duration: .9, ease: 'power2.inOut',
+          scrollTrigger: { trigger: el, start: 'top 89%', toggleActions: 'play none none none' } }
+      );
+    });
+
+    /* sec-titles */
+    gsap.utils.toArray('.sec-title').forEach(function (el) {
+      gsap.fromTo(el,
+        { opacity: 0, y: 28 },
+        { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out',
+          scrollTrigger: { trigger: el, start: 'top 86%', toggleActions: 'play none none none' } }
+      );
+    });
+
+    /* about image scale */
+    gsap.fromTo('.about-img img',
+      { scale: 1.09 },
+      { scale: 1, duration: 1.7, ease: 'power2.out',
+        scrollTrigger: { trigger: '.about-img', start: 'top 80%', toggleActions: 'play none none none' } }
+    );
+
+    /* about body stagger from right */
+    gsap.utils.toArray('.about-body > *').forEach(function (el, i) {
+      gsap.fromTo(el,
+        { opacity: 0, x: 28 },
+        { opacity: 1, x: 0, duration: .9, ease: 'power3.out', delay: i * .09,
+          scrollTrigger: { trigger: '.about-body', start: 'top 80%', toggleActions: 'play none none none' } }
+      );
+    });
+
+    /* stats stagger */
+    gsap.utils.toArray('.stat').forEach(function (el, i) {
+      gsap.fromTo(el,
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: .7, ease: 'power2.out', delay: i * .12,
+          scrollTrigger: { trigger: '.about-stats', start: 'top 86%', toggleActions: 'play none none none' } }
+      );
+    });
+
+    /* menu items */
+    gsap.utils.toArray('.m-item').forEach(function (el, i) {
+      gsap.fromTo(el,
+        { opacity: 0, x: -14 },
+        { opacity: 1, x: 0, duration: .5, ease: 'power2.out', delay: i * .04,
+          scrollTrigger: { trigger: el, start: 'top 93%', toggleActions: 'play none none none' } }
+      );
+    });
+
+    /* gallery parallax scrub */
+    gsap.utils.toArray('.g-main img, .g-sub img').forEach(function (img) {
+      gsap.fromTo(img,
+        { scale: 1.1 },
+        { scale: 1, ease: 'none',
+          scrollTrigger: { trigger: img, start: 'top bottom', end: 'bottom top', scrub: 1.6 } }
+      );
+    });
+
+    /* why cards stagger */
+    gsap.utils.toArray('.why-card').forEach(function (c, i) {
+      gsap.fromTo(c,
+        { opacity: 0, y: 50 },
+        { opacity: 1, y: 0, duration: 1, ease: 'power3.out', delay: i * .18,
+          scrollTrigger: { trigger: '.why-grid', start: 'top 78%', toggleActions: 'play none none none' } }
+      );
+    });
+
+    /* testimonial cards stagger */
+    gsap.utils.toArray('.testi-card').forEach(function (c, i) {
+      gsap.fromTo(c,
+        { opacity: 0, y: 35 },
+        { opacity: 1, y: 0, duration: .9, ease: 'power3.out', delay: i * .14,
+          scrollTrigger: { trigger: '.testi-grid', start: 'top 78%', toggleActions: 'play none none none' } }
+      );
+    });
+
+    /* hours rows stagger */
+    gsap.utils.toArray('.h-row').forEach(function (r, i) {
+      gsap.fromTo(r,
+        { opacity: 0, x: -22 },
+        { opacity: 1, x: 0, duration: .7, ease: 'power2.out', delay: i * .12,
+          scrollTrigger: { trigger: '.hours-table', start: 'top 80%', toggleActions: 'play none none none' } }
+      );
+    });
+
+    /* contact items */
+    gsap.utils.toArray('.c-item').forEach(function (c, i) {
+      gsap.fromTo(c,
+        { opacity: 0, x: -25 },
+        { opacity: 1, x: 0, duration: .8, ease: 'power3.out', delay: i * .15,
+          scrollTrigger: { trigger: '.contact-info', start: 'top 78%', toggleActions: 'play none none none' } }
+      );
+    });
+
+    /* form fields */
+    gsap.utils.toArray('.contact-form .fg, .contact-form .form-submit').forEach(function (el, i) {
+      gsap.fromTo(el,
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: .55, ease: 'power2.out', delay: i * .07,
+          scrollTrigger: { trigger: '.contact-form', start: 'top 80%', toggleActions: 'play none none none' } }
+      );
+    });
+
+    /* section head elements */
+    gsap.utils.toArray('.menu-head > *, .testi-head > *, .why-head > *').forEach(function (el) {
+      gsap.fromTo(el,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: .8, ease: 'power2.out',
+          scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' } }
+      );
+    });
+
+    /* hours CTA overlay elements */
+    gsap.utils.toArray('.hours-right-overlay > *').forEach(function (el, i) {
+      gsap.fromTo(el,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: .8, ease: 'power2.out', delay: i * .1,
+          scrollTrigger: { trigger: '.hours-right', start: 'top 75%', toggleActions: 'play none none none' } }
+      );
+    });
+  }
+
+  /* ── MARQUEE ─────────────────────────────────────────────── */
+  function initMarquee() {
+    var track = document.getElementById('marqueeTrack');
+    if (!track) return;
+    track.innerHTML += track.innerHTML;
+    var halfW = track.scrollWidth / 2;
+    gsap.to(track, { x: -halfW, duration: 38, ease: 'none', repeat: -1 });
+  }
+
+  /* ── MENU TABS ───────────────────────────────────────────── */
+  document.querySelectorAll('.m-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      document.querySelectorAll('.m-tab').forEach(function (t) { t.classList.remove('active'); });
+      document.querySelectorAll('.m-panel').forEach(function (p) { p.classList.remove('active'); });
+      tab.classList.add('active');
+      document.getElementById('mp' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  /* ── FORM SUBMIT ─────────────────────────────────────────── */
+  var contactForm = document.getElementById('contactForm');
+  var formBtn     = document.getElementById('formBtn');
+
+  contactForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    formBtn.textContent = 'Odesíláno…';
+    formBtn.style.opacity = '.65';
+    formBtn.disabled = true;
+    setTimeout(function () {
+      formBtn.textContent = 'Zpráva odeslána ✓';
+      formBtn.style.opacity = '1';
+      formBtn.style.background = '#3a6b32';
+      formBtn.disabled = false;
+    }, 1300);
+  });
+
+}());
+</script>
+
+<!-- ══ TRACKING ══════════════════════════════════════════ -->
+<script>fetch('http://localhost:3000/t/visit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({siteId:'wh-kav-rna-slune-nice-1781530825177'})}).catch(function(){})</script>
+</body>
+</html>
